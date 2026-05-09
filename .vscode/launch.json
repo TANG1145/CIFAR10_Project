@@ -1,0 +1,70 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Train CNN (CUDA)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/train.py",
+            "args": [
+                "--model", "cnn",
+                "--cnn_variant", "improved",
+                "--epochs", "50",
+                "--batch_size", "128",
+                "--lr", "0.001",
+                "--device", "cuda",
+                "--scheduler", "cosine",
+                "--early_stop", "10"
+            ],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/src"
+        },
+        {
+            "name": "Train MLP (CUDA)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/train.py",
+            "args": [
+                "--model", "mlp",
+                "--epochs", "50",
+                "--batch_size", "128",
+                "--lr", "0.001",
+                "--device", "cuda",
+                "--scheduler", "plateau",
+                "--early_stop", "10"
+            ],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/src"
+        },
+        {
+            "name": "Evaluate CNN",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/evaluate.py",
+            "args": [
+                "--model", "cnn",
+                "--cnn_variant", "improved",
+                "--checkpoint", "${workspaceFolder}/checkpoints/cnn/best_model.pth",
+                "--device", "cuda",
+                "--save_prefix", "cnn"
+            ],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/src"
+        },
+        {
+            "name": "Quick Test (CPU, 2 epochs)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/train.py",
+            "args": [
+                "--model", "cnn",
+                "--epochs", "2",
+                "--batch_size", "64",
+                "--device", "cpu",
+                "--num_workers", "0"
+            ],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/src"
+        }
+    ]
+}
