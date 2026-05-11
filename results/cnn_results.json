@@ -1,0 +1,19 @@
+{
+  "model": "cnn",
+  "test_accuracy": 80.17,
+  "test_precision_macro": 0.8012595629238671,
+  "test_recall_macro": 0.8017000000000001,
+  "test_f1_macro": 0.8012265912840254,
+  "per_class_accuracy": {
+    "airplane": 0.809,
+    "automobile": 0.892,
+    "bird": 0.731,
+    "cat": 0.622,
+    "deer": 0.793,
+    "dog": 0.727,
+    "frog": 0.867,
+    "horse": 0.821,
+    "ship": 0.887,
+    "truck": 0.868
+  }
+}
