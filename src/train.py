@@ -145,7 +145,7 @@ def main():
 
     # 学习率调度
     if args.scheduler == 'plateau':
-        scheduler = ReduceLROnPlateau(optimizer, mode='max', factor=0.5, patience=5, verbose=True)
+        scheduler = ReduceLROnPlateau(optimizer, mode='max', factor=0.5, patience=5)
     elif args.scheduler == 'cosine':
         scheduler = CosineAnnealingLR(optimizer, T_max=args.epochs, eta_min=1e-6)
     else:
