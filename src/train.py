@@ -16,7 +16,7 @@ from data_loader import get_data_loaders, CIFAR10_CLASSES
 from models.mlp import create_mlp
 from models.cnn import create_cnn
 from models.resnet import create_resnet18
-from utils import train_epoch, validate_epoch, save_checkpoint, plot_training_curves
+from utils import train_epoch, validate_epoch, save_checkpoint, load_checkpoint, plot_training_curves
 
 
 def parse_args():
@@ -59,6 +59,8 @@ def parse_args():
                         help='计算设备: auto/cuda/cpu')
     parser.add_argument('--seed', type=int, default=42,
                         help='随机种子')
+    parser.add_argument('--resume', '-r', action='store_true',
+                        help='从 latest_model.pth 恢复训练')
 
     # 输出
     parser.add_argument('--save_dir', type=str, default=None,
@@ -154,16 +156,33 @@ def main():
     else:
         scheduler = None
 
+    # 恢复训练
+    start_epoch = 1
+    history = {'train_loss': [], 'train_acc': [], 'val_loss': [], 'val_acc': []}
+    best_acc = 0.0
+    epochs_no_improve = 0
+
+    if args.resume:
+        resume_path = os.path.join(args.save_dir, 'latest_model.pth')
+        history_path = os.path.join(args.save_dir, 'history.json')
+        if os.path.exists(resume_path):
+            print(f"\nResuming from {resume_path}")
+            start_epoch, best_acc = load_checkpoint(model, optimizer, resume_path, device)
+            start_epoch += 1
+            if os.path.exists(history_path):
+                with open(history_path, 'r') as f:
+                    history = json.load(f)
+            epochs_no_improve = sum(1 for v in history['val_acc'][::-1] if v < best_acc)
+            print(f"Resumed at epoch {start_epoch}, best_acc={best_acc:.2f}%")
+        else:
+            print(f"Checkpoint not found: {resume_path}, starting from scratch")
+
     # 训练循环
     print("\n" + "="*60)
     print("Starting Training")
     print("="*60)
 
-    history = {'train_loss': [], 'train_acc': [], 'val_loss': [], 'val_acc': []}
-    best_acc = 0.0
-    epochs_no_improve = 0
-
-    for epoch in range(1, args.epochs + 1):
+    for epoch in range(start_epoch, args.epochs + 1):
         print(f"\nEpoch [{epoch}/{args.epochs}]")
 
         train_loss, train_acc = train_epoch(model, train_loader, criterion, optimizer, device)
