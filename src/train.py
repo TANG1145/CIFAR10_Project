@@ -41,17 +41,17 @@ def parse_args():
                         help='Dropout 率')
 
     # 训练
-    parser.add_argument('--epochs', type=int, default=50,
+    parser.add_argument('--epochs', type=int, default=200,
                         help='训练轮数')
-    parser.add_argument('--lr', type=float, default=0.001,
+    parser.add_argument('--lr', type=float, default=0.1,
                         help='初始学习率')
     parser.add_argument('--weight_decay', type=float, default=5e-4,
                         help='权重衰减 (L2正则化)')
-    parser.add_argument('--optimizer', type=str, default='adam', choices=['adam', 'sgd'],
+    parser.add_argument('--optimizer', type=str, default='sgd', choices=['adam', 'sgd'],
                         help='优化器类型')
     parser.add_argument('--scheduler', type=str, default='cosine', choices=['plateau', 'cosine', 'none'],
                         help='学习率调度器')
-    parser.add_argument('--early_stop', type=int, default=10,
+    parser.add_argument('--early_stop', type=int, default=30,
                         help='早停耐心值 (0 表示禁用)')
 
     # 系统
@@ -75,8 +75,8 @@ def set_seed(seed):
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.deterministic = False
+    torch.backends.cudnn.benchmark = True
 
 
 def get_device(device_arg):
