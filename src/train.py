@@ -172,7 +172,6 @@ def main():
             if os.path.exists(history_path):
                 with open(history_path, 'r') as f:
                     history = json.load(f)
-            epochs_no_improve = sum(1 for v in history['val_acc'][::-1] if v < best_acc)
             print(f"Resumed at epoch {start_epoch}, best_acc={best_acc:.2f}%")
         else:
             print(f"Checkpoint not found: {resume_path}, starting from scratch")
@@ -218,6 +217,11 @@ def main():
         # 保存最新模型
         latest_path = os.path.join(args.save_dir, 'latest_model.pth')
         save_checkpoint(model, optimizer, epoch, best_acc, latest_path)
+
+        # 每 epoch 保存训练历史
+        history_path = os.path.join(args.save_dir, 'history.json')
+        with open(history_path, 'w') as f:
+            json.dump(history, f, indent=2)
 
         # 早停
         if args.early_stop > 0 and epochs_no_improve >= args.early_stop:
