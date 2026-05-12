@@ -1,0 +1,19 @@
+{
+  "model": "resnet18",
+  "test_accuracy": 82.25,
+  "test_precision_macro": 0.8270904321059982,
+  "test_recall_macro": 0.8225,
+  "test_f1_macro": 0.8229046315043146,
+  "per_class_accuracy": {
+    "airplane": 0.806,
+    "automobile": 0.95,
+    "bird": 0.757,
+    "cat": 0.683,
+    "deer": 0.866,
+    "dog": 0.753,
+    "frog": 0.861,
+    "horse": 0.84,
+    "ship": 0.907,
+    "truck": 0.802
+  }
+}
