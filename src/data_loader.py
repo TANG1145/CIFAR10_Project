@@ -94,16 +94,21 @@ def get_data_loaders(data_path, batch_size=128, num_workers=4):
         transform=train_transform
     )
 
-    # 划分训练/验证
+    # 划分训练/验证（各自使用独立的底层数据集，避免 transform 冲突）
+    from torch.utils.data import Subset
     train_size = len(full_train_dataset) - 5000
     val_size = 5000
-    train_dataset, val_dataset = torch.utils.data.random_split(
-        full_train_dataset, [train_size, val_size],
-        generator=torch.Generator().manual_seed(42)
-    )
+    indices = torch.randperm(len(full_train_dataset),
+                             generator=torch.Generator().manual_seed(42))
+    train_indices = indices[:train_size].tolist()
+    val_indices = indices[train_size:].tolist()
 
-    # 验证集使用测试变换（无数据增强）
-    val_dataset.dataset.transform = test_transform
+    train_dataset = Subset(full_train_dataset, train_indices)
+
+    val_full_dataset = CIFAR10LocalDataset(
+        data_path=data_path, train=True, transform=test_transform
+    )
+    val_dataset = Subset(val_full_dataset, val_indices)
 
     test_dataset = CIFAR10LocalDataset(
         data_path=data_path,
