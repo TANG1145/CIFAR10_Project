@@ -25,5 +25,6 @@
         "**/checkpoints": true,
         "**/results": true,
         "**/cifar-10-batches-py": true
-    }
+    },
+    "python-envs.defaultEnvManager": "ms-python.python:system"
 }
