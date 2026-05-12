@@ -1,0 +1,17 @@
+{
+  "data_path": "/mnt/d/CIFAR10_Project/cifar-10-batches-py",
+  "batch_size": 128,
+  "num_workers": 4,
+  "model": "cnn",
+  "cnn_variant": "improved",
+  "dropout": 0.3,
+  "epochs": 50,
+  "lr": 0.001,
+  "weight_decay": 0.0005,
+  "optimizer": "adam",
+  "scheduler": "cosine",
+  "early_stop": 10,
+  "device": "cuda",
+  "seed": 42,
+  "save_dir": "/mnt/d/CIFAR10_Project/checkpoints/cnn"
+}
