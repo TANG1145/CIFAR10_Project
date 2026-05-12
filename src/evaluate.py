@@ -14,6 +14,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 from data_loader import get_data_loaders, CIFAR10_CLASSES
 from models.mlp import create_mlp
 from models.cnn import create_cnn
+from models.resnet import create_resnet18
 from utils import (load_checkpoint, plot_confusion_matrix, plot_class_accuracy,
                    print_classification_report, save_results_summary)
 
@@ -26,7 +27,7 @@ def parse_args():
     parser.add_argument('--batch_size', type=int, default=128)
     parser.add_argument('--num_workers', type=int, default=4)
 
-    parser.add_argument('--model', type=str, default='cnn', choices=['mlp', 'cnn'])
+    parser.add_argument('--model', type=str, default='cnn', choices=['mlp', 'cnn', 'resnet18'])
     parser.add_argument('--cnn_variant', type=str, default='improved',
                         choices=['standard', 'improved'])
     parser.add_argument('--dropout', type=float, default=0.3)
@@ -127,8 +128,10 @@ def main():
     print(f"Building {args.model.upper()} model...")
     if args.model == 'mlp':
         model = create_mlp(dropout_rate=args.dropout)
-    else:
+    elif args.model == 'cnn':
         model = create_cnn(variant=args.cnn_variant, dropout_rate=args.dropout)
+    else:
+        model = create_resnet18()
     model = model.to(device)
 
     # 加载权重

@@ -15,6 +15,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingLR
 from data_loader import get_data_loaders, CIFAR10_CLASSES
 from models.mlp import create_mlp
 from models.cnn import create_cnn
+from models.resnet import create_resnet18
 from utils import train_epoch, validate_epoch, save_checkpoint, plot_training_curves
 
 
@@ -31,8 +32,8 @@ def parse_args():
                         help='数据加载线程数')
 
     # 模型
-    parser.add_argument('--model', type=str, default='cnn', choices=['mlp', 'cnn'],
-                        help='模型类型: mlp 或 cnn')
+    parser.add_argument('--model', type=str, default='cnn', choices=['mlp', 'cnn', 'resnet18'],
+                        help='模型类型: mlp, cnn 或 resnet18')
     parser.add_argument('--cnn_variant', type=str, default='improved',
                         choices=['standard', 'improved'],
                         help='CNN 变体 (仅 CNN 有效)')
@@ -126,8 +127,10 @@ def main():
     print(f"\nBuilding {args.model.upper()} model...")
     if args.model == 'mlp':
         model = create_mlp(dropout_rate=args.dropout)
-    else:
+    elif args.model == 'cnn':
         model = create_cnn(variant=args.cnn_variant, dropout_rate=args.dropout)
+    else:
+        model = create_resnet18()
     model = model.to(device)
 
     total_params = sum(p.numel() for p in model.parameters())
@@ -145,7 +148,7 @@ def main():
 
     # 学习率调度
     if args.scheduler == 'plateau':
-        scheduler = ReduceLROnPlateau(optimizer, mode='max', factor=0.5, patience=5, verbose=True)
+        scheduler = ReduceLROnPlateau(optimizer, mode='max', factor=0.5, patience=5)
     elif args.scheduler == 'cosine':
         scheduler = CosineAnnealingLR(optimizer, T_max=args.epochs, eta_min=1e-6)
     else:
