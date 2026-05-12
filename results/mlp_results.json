@@ -1,19 +1,19 @@
 {
   "model": "mlp",
-  "test_accuracy": 56.51,
-  "test_precision_macro": 0.5630924613069801,
-  "test_recall_macro": 0.5650999999999999,
-  "test_f1_macro": 0.5620026328828455,
+  "test_accuracy": 55.57,
+  "test_precision_macro": 0.5604901890214506,
+  "test_recall_macro": 0.5557,
+  "test_f1_macro": 0.5558275576444826,
   "per_class_accuracy": {
-    "airplane": 0.621,
-    "automobile": 0.651,
-    "bird": 0.385,
-    "cat": 0.379,
-    "deer": 0.486,
-    "dog": 0.434,
-    "frog": 0.704,
-    "horse": 0.649,
-    "ship": 0.716,
-    "truck": 0.626
+    "airplane": 0.654,
+    "automobile": 0.633,
+    "bird": 0.355,
+    "cat": 0.451,
+    "deer": 0.501,
+    "dog": 0.47,
+    "frog": 0.581,
+    "horse": 0.58,
+    "ship": 0.705,
+    "truck": 0.627
   }
 }
