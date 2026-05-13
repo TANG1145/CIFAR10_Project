@@ -6,18 +6,23 @@
 
 ```
 CIFAR10_Project/
-├── cifar-10-batches-py/       # CIFAR-10 数据集（已下载）
-├── checkpoints/               # 模型保存目录
-├── results/                   # 结果图表目录
+├── cifar-10-batches-py/       # CIFAR-10 数据集（45K 训练 / 5K 验证 / 10K 测试）
+├── checkpoints/               # 模型检查点
+│   ├── mlp/
+│   ├── cnn/
+│   └── resnet18/
+├── results/                   # 评估结果与可视化
 ├── src/
-│   ├── data_loader.py         # 数据加载与预处理
+│   ├── data_loader.py         # 数据加载、增强、归一化
 │   ├── models/
-│   │   ├── mlp.py             # 多层感知机模型
-│   │   └── cnn.py             # 卷积神经网络模型
+│   │   ├── mlp.py             # 多层感知机（~3.8M 参数）
+│   │   ├── cnn.py             # 标准 / 改进 CNN（~3.25M / ~4.69M 参数）
+│   │   └── resnet.py          # ResNet-18（~11M 参数）
 │   ├── train.py               # 训练脚本
 │   ├── evaluate.py            # 评估脚本
-│   └── utils.py               # 工具函数（可视化等）
-├── requirements.txt           # Python依赖
+│   └── utils.py               # 工具函数（训练循环、可视化、检查点）
+├── requirements.txt           # Python 依赖
+├── PROGRESS.md                # 进度总结
 └── README.md                  # 本文件
 ```
 
@@ -37,64 +42,83 @@ pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 pip install -r requirements.txt
 ```
 
-### 2. Win 远程端（CUDA 训练）
+### 2. Win/WSL2 端（CUDA 训练）
 
-在 Windows 训练机上安装 GPU 版 PyTorch：
+在训练机上安装 GPU 版 PyTorch：
 
 ```bash
-# 先确认 CUDA 版本（如 CUDA 12.1）
+# 先确认 CUDA 版本
 nvidia-smi
 
-# 创建虚拟环境
-python -m venv venv
-venv\Scripts\activate
+# 创建 conda 环境（推荐）
+conda create -n cifar10 python=3.10 -y
+conda activate cifar10
 
-# 安装GPU版PyTorch（以CUDA 12.1为例，根据实际版本调整）
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+# 安装GPU版PyTorch（根据实际 CUDA 版本调整，如 cu124）
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
 pip install -r requirements.txt
 ```
 
-> **注意**：Windows 和 Mac 的 `requirements.txt` 中除 PyTorch 外其他包通用。建议在两台机器上分别安装对应版本的 torch，其余依赖一致。
+## 模型与结果
+
+| 模型 | 参数 | 测试准确率 | 说明 |
+|------|------|-----------|------|
+| MLP | ~3.8M | 55.57% | 3 层全连接 + BatchNorm + Dropout，基线模型 |
+| CNN (Improved) | ~4.69M | 83.66% | 4 卷积块 + GAP |
+| ResNet-18 | ~11M | 95.16% | 残差连接 |
 
 ## 快速开始
 
-### 在 Mac 上轻量测试（CPU，少量 epoch）
+### 训练
 
 ```bash
-source venv/bin/activate
-cd src
-python train.py --model cnn --epochs 2 --batch_size 64 --device cpu
+# MLP
+python train.py --model mlp --epochs 50 --batch_size 128 --lr 0.001 --optimizer adam --device cuda
+
+# CNN (Improved)
+python train.py --model cnn --cnn_variant improved --epochs 50 --batch_size 128 --lr 0.001 --optimizer adam --device cuda
+
+# ResNet-18
+python train.py --model resnet18 --epochs 100 --batch_size 128 --lr 0.1 --scheduler cosine --optimizer sgd --device cuda
 ```
 
-### 在 Win 远程机上正式训练（CUDA）
+### 评估
 
 ```bash
-venv\Scripts\activate
-cd src
-python train.py --model cnn --epochs 50 --batch_size 128 --device cuda
-python train.py --model mlp --epochs 50 --batch_size 128 --device cuda
+python evaluate.py --model cnn --checkpoint ../checkpoints/cnn/best_model.pth --device cuda --save_prefix cnn
 ```
 
-### 评估模型
+## 参数说明
 
-```bash
-python evaluate.py --model cnn --checkpoint ../checkpoints/cnn_best.pth --device cuda
-```
+| 参数 | 说明 | 可选值 | 默认值 |
+|------|------|------|--------|
+| `--model` | 模型类型 | `mlp` / `cnn` / `resnet18` | `cnn` |
+| `--cnn_variant` | CNN 变体 | `standard` / `improved` | `improved` |
+| `--epochs` | 训练轮数 | — | `200` |
+| `--batch_size` | 批次大小 | — | `128` |
+| `--lr` | 学习率 | — | `0.1` |
+| `--weight_decay` | 权重衰减 | — | `5e-4` |
+| `--optimizer` | 优化器 | `adam` / `sgd` | `sgd` |
+| `--scheduler` | 学习率调度器 | `cosine` / `plateau` / `none` | `cosine` |
+| `--dropout` | Dropout 率 | — | `0.3` |
+| `--early_stop` | 早停耐心值 | — | `30` |
+| `--device` | 计算设备 | `auto` / `cuda` / `cpu` | `auto` |
+| `--resume` | 从 latest_model 恢复训练 | flag | — |
+| `--seed` | 随机种子 | — | `42` |
 
-## 跨平台/远程开发建议
+## 输出文件
 
-1. **代码同步**：使用 Git 仓库或 VSCode SFTP 插件同步 `src/` 代码
-2. **数据集**：Win 端也下载一份到相同相对路径，或通过网络共享
-3. **路径兼容**：代码中使用 `os.path.join`/`pathlib.Path`，已保证跨平台
-4. **设备自动回退**：脚本默认自动检测 CUDA，也可用 `--device` 指定
+### 检查点 (`checkpoints/<model>/`)
 
-## 关键参数说明
+- `best_model.pth` — 最佳验证准确率模型
+- `latest_model.pth` — 最新 epoch 模型
+- `config.json` — 训练配置
+- `history.json` — 训练历史（loss / acc 曲线数据）
 
-| 参数 | 说明 | 示例 |
-|------|------|------|
-| `--model` | 模型类型：`mlp` 或 `cnn` | `--model cnn` |
-| `--epochs` | 训练轮数 | `--epochs 50` |
-| `--batch_size` | 批次大小 | `--batch_size 128` |
-| `--lr` | 学习率 | `--lr 0.001` |
-| `--device` | 计算设备：`cuda`/`cpu`/`auto` | `--device cuda` |
-| `--data_path` | 数据集路径 | `--data_path ../cifar-10-batches-py` |
+### 评估结果 (`results/`)
+
+- `<model>_training_curves.png` — 训练/验证曲线
+- `<model>_confusion_matrix.png` — 混淆矩阵
+- `<model>_class_accuracy.png` — 各类别准确率
+- `<model>_classification_report.txt` — 分类报告文本
+- `<model>_results.json` — 结果摘要 JSON
