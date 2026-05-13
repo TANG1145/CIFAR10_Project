@@ -1,0 +1,32 @@
+% CIFAR-10 实验结果汇总表
+% 由 src/generate_summary.py 自动生成
+
+\begin{table}[htbp]
+  \centering
+  \caption{CIFAR-10 模型对比}
+  \label{tab:model_comparison}
+  \begin{tabular}{lcccccc}
+    \toprule
+    模型 & 参数量 & 测试准确率(\%) & Precision & Recall & F1 & 训练时间 \\
+    \midrule
+    MLP & ~3.8M & 39.31 & 0.3942 & 0.3931 & 0.3765 & ~2 min (CPU) \\
+    CNN & ~4.69M & 83.66 & 0.8357 & 0.8366 & 0.8359 & ~5 min (GPU) \\
+    RESNET18 & ~11.17M & 95.16 & 0.9516 & 0.9516 & 0.9516 & ~15 min (GPU) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+  \centering
+  \caption{各类别准确率 (\%)}
+  \label{tab:per_class_accuracy}
+  \begin{tabular}{lcccccccccc}
+    \toprule
+    模型 & Airplane & Automobile & Bird & Cat & Deer & Dog & Frog & Horse & Ship & Truck \\
+    \midrule
+    MLP & 51.5 & 57.0 & 20.4 & 19.1 & 18.5 & 41.4 & 56.4 & 38.9 & 63.8 & 26.1 \\
+    CNN & 86.4 & 90.5 & 76.0 & 67.5 & 80.5 & 75.3 & 89.9 & 87.8 & 91.4 & 91.3 \\
+    RESNET18 & 96.2 & 98.1 & 92.3 & 90.0 & 97.0 & 91.9 & 96.4 & 96.8 & 96.4 & 96.5 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

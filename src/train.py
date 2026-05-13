@@ -7,19 +7,29 @@ import os
 import sys
 import argparse
 import json
+from typing import Any, Dict, Optional
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingLR
 
 from data_loader import get_data_loaders, CIFAR10_CLASSES
-from models.mlp import create_mlp
-from models.cnn import create_cnn
-from models.resnet import create_resnet18
-from utils import train_epoch, validate_epoch, save_checkpoint, load_checkpoint, plot_training_curves
+from torchvision import transforms
+from models import create_model
+from training import train_epoch, validate_epoch
+from checkpoint import save_checkpoint, load_checkpoint
+from visualization import plot_training_curves
+from device import get_device
+from evaluate import evaluate_model
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
+    """解析命令行参数。
+
+    Returns:
+        包含所有训练配置参数的命名空间对象。
+    """
     parser = argparse.ArgumentParser(description='CIFAR-10 Training')
 
     # 数据
@@ -49,6 +59,8 @@ def parse_args():
                         help='权重衰减 (L2正则化)')
     parser.add_argument('--optimizer', type=str, default='sgd', choices=['adam', 'sgd'],
                         help='优化器类型')
+    parser.add_argument('--momentum', type=float, default=0.9,
+                        help='SGD 动量 (仅 SGD 有效)')
     parser.add_argument('--scheduler', type=str, default='cosine', choices=['plateau', 'cosine', 'none'],
                         help='学习率调度器')
     parser.add_argument('--early_stop', type=int, default=30,
@@ -69,8 +81,12 @@ def parse_args():
     return parser.parse_args()
 
 
-def set_seed(seed):
-    """设置随机种子保证可复现"""
+def set_seed(seed: int) -> None:
+    """设置随机种子以保证结果可复现。
+
+    Args:
+        seed: 随机种子值。
+    """
     import random
     import numpy as np
     random.seed(seed)
@@ -81,27 +97,14 @@ def set_seed(seed):
     torch.backends.cudnn.benchmark = True
 
 
-def get_device(device_arg):
-    """获取计算设备"""
-    if device_arg == 'auto':
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    else:
-        device = torch.device(device_arg)
-    print(f"Using device: {device}")
-    if device.type == 'cuda':
-        print(f"GPU: {torch.cuda.get_device_name(0)}")
-        print(f"CUDA version: {torch.version.cuda}")
-    return device
-
-
-def main():
-    args = parse_args()
+def run_training(
+    args: argparse.Namespace,
+    train_transform: Optional[transforms.Compose] = None,
+    val_transform: Optional[transforms.Compose] = None,
+) -> Dict[str, Any]:
     set_seed(args.seed)
-
-    # 设备
     device = get_device(args.device)
 
-    # 保存路径
     if args.save_dir is None:
         args.save_dir = os.path.join(
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
@@ -110,45 +113,38 @@ def main():
     os.makedirs(args.save_dir, exist_ok=True)
     print(f"Checkpoints will be saved to: {args.save_dir}")
 
-    # 保存配置
     config_path = os.path.join(args.save_dir, 'config.json')
     with open(config_path, 'w') as f:
-        json.dump(vars(args), f, indent=2)
+        json.dump(vars(args), f, indent=2, default=str)
     print(f"Config saved to {config_path}")
 
-    # 数据
     print("\nLoading data...")
     train_loader, val_loader, test_loader = get_data_loaders(
         data_path=args.data_path,
         batch_size=args.batch_size,
-        num_workers=args.num_workers
+        num_workers=args.num_workers,
+        train_transform=train_transform,
+        val_transform=val_transform,
     )
     print(f"Train: {len(train_loader.dataset)}, Val: {len(val_loader.dataset)}, Test: {len(test_loader.dataset)}")
 
-    # 模型
     print(f"\nBuilding {args.model.upper()} model...")
-    if args.model == 'mlp':
-        model = create_mlp(dropout_rate=args.dropout)
-    elif args.model == 'cnn':
-        model = create_cnn(variant=args.cnn_variant, dropout_rate=args.dropout)
-    else:
-        model = create_resnet18()
+    model = create_model(args.model, variant=args.cnn_variant, dropout_rate=args.dropout)
     model = model.to(device)
 
     total_params = sum(p.numel() for p in model.parameters())
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"Total parameters: {total_params:,}, Trainable: {trainable_params:,}")
 
-    # 损失函数 & 优化器
     criterion = nn.CrossEntropyLoss()
 
     if args.optimizer == 'adam':
         optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     else:
-        optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9,
-                              weight_decay=args.weight_decay, nesterov=True)
+        momentum = getattr(args, 'momentum', 0.9)
+        optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=momentum,
+                              weight_decay=args.weight_decay, nesterov=(momentum > 0))
 
-    # 学习率调度
     if args.scheduler == 'plateau':
         scheduler = ReduceLROnPlateau(optimizer, mode='max', factor=0.5, patience=5)
     elif args.scheduler == 'cosine':
@@ -156,7 +152,6 @@ def main():
     else:
         scheduler = None
 
-    # 恢复训练
     start_epoch = 1
     history = {'train_loss': [], 'train_acc': [], 'val_loss': [], 'val_acc': []}
     best_acc = 0.0
@@ -176,7 +171,6 @@ def main():
         else:
             print(f"Checkpoint not found: {resume_path}, starting from scratch")
 
-    # 训练循环
     print("\n" + "="*60)
     print("Starting Training")
     print("="*60)
@@ -195,7 +189,6 @@ def main():
         print(f"Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.2f}%")
         print(f"Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2f}%")
 
-        # 学习率调整
         current_lr = optimizer.param_groups[0]['lr']
         print(f"Learning rate: {current_lr:.6f}")
 
@@ -204,7 +197,6 @@ def main():
         elif args.scheduler == 'cosine':
             scheduler.step()
 
-        # 保存最佳模型
         if val_acc > best_acc:
             best_acc = val_acc
             best_path = os.path.join(args.save_dir, 'best_model.pth')
@@ -214,26 +206,21 @@ def main():
         else:
             epochs_no_improve += 1
 
-        # 保存最新模型
         latest_path = os.path.join(args.save_dir, 'latest_model.pth')
         save_checkpoint(model, optimizer, epoch, best_acc, latest_path)
 
-        # 每 epoch 保存训练历史
         history_path = os.path.join(args.save_dir, 'history.json')
         with open(history_path, 'w') as f:
             json.dump(history, f, indent=2)
 
-        # 早停
         if args.early_stop > 0 and epochs_no_improve >= args.early_stop:
             print(f"\nEarly stopping triggered after {epoch} epochs")
             break
 
-    # 保存训练历史
     history_path = os.path.join(args.save_dir, 'history.json')
     with open(history_path, 'w') as f:
         json.dump(history, f, indent=2)
 
-    # 绘制训练曲线
     results_dir = os.path.join(os.path.dirname(args.save_dir), '..', 'results')
     os.makedirs(results_dir, exist_ok=True)
     plot_path = os.path.join(results_dir, f'{args.model}_training_curves.png')
@@ -245,11 +232,17 @@ def main():
     print(f"Model saved to: {args.save_dir}")
     print("="*60)
 
-    # 测试集最终评估
     print("\nEvaluating on test set...")
-    from evaluate import evaluate_model
     test_acc = evaluate_model(model, test_loader, device, save_prefix=args.model)
     print(f"Test Accuracy: {test_acc:.2f}%")
+
+    return history
+
+
+def main() -> None:
+    """主训练函数。"""
+    args = parse_args()
+    run_training(args)
 
 
 if __name__ == "__main__":

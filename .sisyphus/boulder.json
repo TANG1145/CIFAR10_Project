@@ -1,0 +1,50 @@
+{
+  "active_plan": "/Users/tan/Projects/CIFAR10_Project/.sisyphus/plans/high-score-boost.md",
+  "started_at": "2026-05-13T11:19:48.382Z",
+  "session_ids": [
+    "ses_1df19d8c9ffeCMM9rAL3u38quo"
+  ],
+  "session_origins": {
+    "ses_1df19d8c9ffeCMM9rAL3u38quo": "direct"
+  },
+  "plan_name": "high-score-boost",
+  "agent": "atlas",
+  "task_sessions": {
+    "todo:1": {
+      "task_key": "todo:1",
+      "task_label": "1",
+      "task_title": "拆分 utils.py 为模块化结构",
+      "session_id": "ses_1deeded3bffemzrFPpoFiGhIzv",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-05-13T11:25:07.223Z"
+    },
+    "todo:2": {
+      "task_key": "todo:2",
+      "task_label": "2",
+      "task_title": "统一设备管理 + 消除重复代码",
+      "session_id": "ses_1dee5d65fffek9ok98REomfsLN",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-05-13T11:31:59.858Z"
+    },
+    "todo:7": {
+      "task_key": "todo:7",
+      "task_label": "7",
+      "task_title": "消融实验框架脚本",
+      "session_id": "ses_1deddf757ffeh5mB1lHVEgJcSN",
+      "agent": "Sisyphus-Junior",
+      "category": "deep",
+      "updated_at": "2026-05-13T11:49:07.929Z"
+    },
+    "todo:10": {
+      "task_key": "todo:10",
+      "task_label": "10",
+      "task_title": "运行消融实验（数据增强 + BatchNorm + Dropout + 优化器）",
+      "session_id": "ses_1dec0894cffekVOvRks2Fa9og4",
+      "agent": "Sisyphus-Junior",
+      "category": "writing",
+      "updated_at": "2026-05-13T12:31:16.099Z"
+    }
+  }
+}

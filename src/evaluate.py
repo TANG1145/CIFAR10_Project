@@ -6,20 +6,29 @@
 import os
 import sys
 import argparse
+from typing import Any, Dict, List, Tuple
+
 import torch
+import torch.nn as nn
 import numpy as np
 from tqdm import tqdm
+from torch.utils.data import DataLoader
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 
 from data_loader import get_data_loaders, CIFAR10_CLASSES
-from models.mlp import create_mlp
-from models.cnn import create_cnn
-from models.resnet import create_resnet18
-from utils import (load_checkpoint, plot_confusion_matrix, plot_class_accuracy,
-                   print_classification_report, save_results_summary)
+from models import create_model
+from checkpoint import load_checkpoint
+from visualization import (plot_confusion_matrix, plot_class_accuracy,
+                           print_classification_report, save_results_summary)
+from device import get_device
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
+    """解析命令行参数。
+
+    Returns:
+        包含所有评估配置参数的命名空间对象。
+    """
     parser = argparse.ArgumentParser(description='CIFAR-10 Evaluation')
 
     default_data_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "cifar-10-batches-py")
@@ -41,17 +50,23 @@ def parse_args():
     return parser.parse_args()
 
 
-def get_device(device_arg):
-    if device_arg == 'auto':
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    else:
-        device = torch.device(device_arg)
-    print(f"Using device: {device}")
-    return device
+def evaluate_model(
+    model: nn.Module,
+    dataloader: DataLoader,
+    device: torch.device,
+    save_prefix: str = 'model',
+) -> float:
+    """评估模型并在测试集上收集预测结果，生成可视化报告。
 
+    Args:
+        model: 要评估的模型。
+        dataloader: 测试数据加载器。
+        device: 计算设备。
+        save_prefix: 结果文件前缀。
 
-def evaluate_model(model, dataloader, device, save_prefix='model'):
-    """评估模型并收集预测结果"""
+    Returns:
+        测试集准确率（百分比）。
+    """
     model.eval()
     all_preds = []
     all_labels = []
@@ -112,7 +127,8 @@ def evaluate_model(model, dataloader, device, save_prefix='model'):
     return accuracy
 
 
-def main():
+def main() -> None:
+    """主评估函数。"""
     args = parse_args()
     device = get_device(args.device)
 
@@ -126,12 +142,7 @@ def main():
 
     # 构建模型
     print(f"Building {args.model.upper()} model...")
-    if args.model == 'mlp':
-        model = create_mlp(dropout_rate=args.dropout)
-    elif args.model == 'cnn':
-        model = create_cnn(variant=args.cnn_variant, dropout_rate=args.dropout)
-    else:
-        model = create_resnet18()
+    model = create_model(args.model, variant=args.cnn_variant, dropout_rate=args.dropout)
     model = model.to(device)
 
     # 加载权重
