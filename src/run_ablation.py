@@ -31,7 +31,7 @@ ABLATION_CONFIGS: Dict[str, List[Dict[str, Any]]] = {
     ],
     "optimizer": [
         {"name": "sgd", "optimizer": "sgd", "description": "SGD optimizer"},
-        {"name": "adam", "optimizer": "adam", "description": "Adam optimizer"},
+        {"name": "adam", "optimizer": "adam", "lr": 0.001, "description": "Adam optimizer (lr=0.001)"},
     ],
     "scheduler": [
         {"name": "cosine", "scheduler": "cosine", "description": "CosineAnnealingLR"},
@@ -93,6 +93,8 @@ def build_experiment_configs(ablation: str, base_args: argparse.Namespace) -> Li
             exp_args.optimizer = cfg["optimizer"]
         if "scheduler" in cfg:
             exp_args.scheduler = cfg["scheduler"]
+        if "lr" in cfg:
+            exp_args.lr = cfg["lr"]
 
         configs.append(vars(exp_args))
     return configs

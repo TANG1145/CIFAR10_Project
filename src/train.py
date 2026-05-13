@@ -42,13 +42,15 @@ def parse_args() -> argparse.Namespace:
                         help='数据加载线程数')
 
     # 模型
-    parser.add_argument('--model', type=str, default='cnn', choices=['mlp', 'cnn', 'resnet18'],
+    parser.add_argument('--model', type=str, default='cnn',
+                        choices=['mlp', 'cnn', 'resnet18'],
                         help='模型类型: mlp, cnn 或 resnet18')
     parser.add_argument('--cnn_variant', type=str, default='improved',
                         choices=['standard', 'improved'],
                         help='CNN 变体 (仅 CNN 有效)')
     parser.add_argument('--dropout', type=float, default=0.3,
                         help='Dropout 率')
+    parser.add_argument('--use_bn', type=bool, default=True, help='Use BatchNorm in CNN')
 
     # 训练
     parser.add_argument('--epochs', type=int, default=200,
@@ -129,7 +131,7 @@ def run_training(
     print(f"Train: {len(train_loader.dataset)}, Val: {len(val_loader.dataset)}, Test: {len(test_loader.dataset)}")
 
     print(f"\nBuilding {args.model.upper()} model...")
-    model = create_model(args.model, variant=args.cnn_variant, dropout_rate=args.dropout)
+    model = create_model(args.model, variant=args.cnn_variant, dropout_rate=args.dropout, use_bn=getattr(args, 'use_bn', True))
     model = model.to(device)
 
     total_params = sum(p.numel() for p in model.parameters())

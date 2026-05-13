@@ -1,0 +1,22 @@
+{
+  "data_path": "/mnt/d/CIFAR10_Project/cifar-10-batches-py",
+  "batch_size": 128,
+  "num_workers": 4,
+  "model": "cnn",
+  "cnn_variant": "improved",
+  "dropout": 0.3,
+  "epochs": 50,
+  "lr": 0.1,
+  "weight_decay": 0.0005,
+  "optimizer": "sgd",
+  "scheduler": "cosine",
+  "early_stop": 30,
+  "device": "cuda",
+  "seed": 42,
+  "resume": false,
+  "save_dir": "results/ablation/scheduler/cosine/cnn",
+  "output_dir": "results/ablation",
+  "experiment_name": "cosine",
+  "ablation_type": "scheduler",
+  "description": "CosineAnnealingLR"
+}
