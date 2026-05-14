@@ -1,9 +1,15 @@
 [0] Config.pm:328> INFO - This is Biber 2.21
 [0] Config.pm:331> INFO - Logfile is 'report_overleaf_images.blg'
-[24] biber-darwin:342> INFO - === Thu May 14, 2026, 18:57:46
-[31] Biber.pm:421> INFO - Reading 'report_overleaf_images.bcf'
+[26] biber-darwin:342> INFO - === Fri May 15, 2026, 01:25:54
+[32] Biber.pm:421> INFO - Reading 'report_overleaf_images.bcf'
 [57] Biber.pm:1002> INFO - Found 4 citekeys in bib section 0
-[62] Biber.pm:4487> INFO - Processing section 0
-[66] Biber.pm:4678> INFO - Looking for bibtex file 'references.bib' for section 0
-[139] Utils.pm:479> ERROR - Cannot find 'references.bib'!
-[139] Biber.pm:137> INFO - ERRORS: 1
+[61] Biber.pm:4487> INFO - Processing section 0
+[65] Biber.pm:4678> INFO - Looking for bibtex file 'references.bib' for section 0
+[65] bibtex.pm:1713> INFO - LaTeX decoding ...
+[67] bibtex.pm:1519> INFO - Found BibTeX data source 'references.bib'
+[88] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[89] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[89] Biber.pm:4307> INFO - Sorting list 'nty/global//global/global/global' of type 'entry' with template 'nty' and locale 'en-US'
+[89] Biber.pm:4313> INFO - No sort tailoring available for locale 'en-US'
+[90] bbl.pm:676> INFO - Writing 'report_overleaf_images.bbl' with encoding 'UTF-8'
+[91] bbl.pm:779> INFO - Output to report_overleaf_images.bbl
