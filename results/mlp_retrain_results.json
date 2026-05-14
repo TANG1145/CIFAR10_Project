@@ -1,0 +1,19 @@
+{
+  "model": "mlp_retrain",
+  "test_accuracy": 60.51,
+  "test_precision_macro": 0.6008092683328623,
+  "test_recall_macro": 0.6051,
+  "test_f1_macro": 0.6000971730199003,
+  "per_class_accuracy": {
+    "airplane": 0.636,
+    "automobile": 0.711,
+    "bird": 0.405,
+    "cat": 0.398,
+    "deer": 0.491,
+    "dog": 0.483,
+    "frog": 0.73,
+    "horse": 0.728,
+    "ship": 0.738,
+    "truck": 0.731
+  }
+}
