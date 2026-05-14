@@ -65,6 +65,10 @@ def parse_args() -> argparse.Namespace:
                         help='SGD 动量 (仅 SGD 有效)')
     parser.add_argument('--scheduler', type=str, default='cosine', choices=['plateau', 'cosine', 'none'],
                         help='学习率调度器')
+    parser.add_argument('--label_smoothing', type=float, default=0.0,
+                        help='标签平滑系数 (默认 0.0 表示不启用)')
+    parser.add_argument('--warmup_epochs', type=int, default=0,
+                        help='线性预热轮数 (0 表示不启用)')
     parser.add_argument('--early_stop', type=int, default=30,
                         help='早停耐心值 (0 表示禁用)')
 
@@ -138,7 +142,7 @@ def run_training(
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"Total parameters: {total_params:,}, Trainable: {trainable_params:,}")
 
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.CrossEntropyLoss(label_smoothing=args.label_smoothing)
 
     if args.optimizer == 'adam':
         optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
@@ -179,6 +183,11 @@ def run_training(
 
     for epoch in range(start_epoch, args.epochs + 1):
         print(f"\nEpoch [{epoch}/{args.epochs}]")
+
+        if args.warmup_epochs > 0 and epoch <= args.warmup_epochs:
+            warmup_lr = args.lr * (epoch / args.warmup_epochs)
+            for param_group in optimizer.param_groups:
+                param_group['lr'] = warmup_lr
 
         train_loss, train_acc = train_epoch(model, train_loader, criterion, optimizer, device)
         val_loss, val_acc = validate_epoch(model, val_loader, criterion, device)
