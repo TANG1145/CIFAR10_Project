@@ -1,19 +1,19 @@
 {
   "model": "cnn",
-  "test_accuracy": 83.66,
-  "test_precision_macro": 0.8356963464161955,
-  "test_recall_macro": 0.8366,
-  "test_f1_macro": 0.8359160817902737,
+  "test_accuracy": 91.11,
+  "test_precision_macro": 0.9106570935144769,
+  "test_recall_macro": 0.9111,
+  "test_f1_macro": 0.9107422797475788,
   "per_class_accuracy": {
-    "airplane": 0.864,
-    "automobile": 0.905,
-    "bird": 0.76,
-    "cat": 0.675,
-    "deer": 0.805,
-    "dog": 0.753,
-    "frog": 0.899,
-    "horse": 0.878,
-    "ship": 0.914,
-    "truck": 0.913
+    "airplane": 0.913,
+    "automobile": 0.963,
+    "bird": 0.888,
+    "cat": 0.801,
+    "deer": 0.929,
+    "dog": 0.836,
+    "frog": 0.943,
+    "horse": 0.94,
+    "ship": 0.959,
+    "truck": 0.939
   }
 }

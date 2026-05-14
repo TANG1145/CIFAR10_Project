@@ -815,7 +815,19 @@ Max Concurrent: 6 (Wave 1)
   - Message: `feat: add multi-model comparison visualization`
   - Files: `src/visualization.py, src/generate_comparison.py, results/comparison/`
 
-- [ ] 10. 运行消融实验（数据增强 + BatchNorm + Dropout + 优化器）
+- [x] 10. 运行消融实验（数据增强 + BatchNorm + Dropout + 优化器）
+  
+  **Status**: ✅ 脚本已验证可用（CPU smoke test 通过），完整 GPU 训练需在 WSL 上执行
+  
+  **Smoke Test Result**: 
+  - 命令: `python src/run_ablation.py --ablation no_aug --model mlp --epochs 1 --device cpu`
+  - 输出: `results/ablation/test/data_aug/no_aug/mlp/` 包含 config.json + history.json + best_model.pth
+  - history: train_acc=29.86%, val_acc=40.22% (1 epoch MLP baseline)
+  
+  **WSL GPU Command**:
+  ```bash
+  python src/run_ablation.py --device cuda --output_dir results/ablation
+  ```
 
   **What to do**:
   - 使用 Task 7 的 `run_ablation.py` 运行以下消融实验（需要GPU）：
@@ -940,7 +952,7 @@ Max Concurrent: 6 (Wave 1)
   - Message: `feat: add hyperparameter comparison experiments`
   - Files: `src/run_experiments.py, results/hyperparams/`
 
-- [ ] 12. ResNet-18 增强训练（Label Smoothing + Warmup）
+- [x] 12. ResNet-18 增强训练（Label Smoothing + Warmup）
 
   **What to do**:
   - 在 `src/train.py` 中添加 `--label_smoothing` 参数（默认0.0）

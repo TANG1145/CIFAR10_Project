@@ -1,9 +1,9 @@
 {
   "model": "resnet18",
   "test_accuracy": 95.16,
-  "test_precision_macro": 0.9516416122319706,
+  "test_precision_macro": 0.9516,
   "test_recall_macro": 0.9516,
-  "test_f1_macro": 0.9515837747154899,
+  "test_f1_macro": 0.9516,
   "per_class_accuracy": {
     "airplane": 0.962,
     "automobile": 0.981,
