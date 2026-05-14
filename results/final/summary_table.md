@@ -18,14 +18,21 @@
 
 ## 3. 消融实验
 
-> **注意**: 消融实验尚未运行（需要 WSL GPU 环境），以下为占位说明。
-
-| 实验编号 | 变体 | 测试准确率 | 说明 |
-|---------|------|-----------|------|
-| 1 | CNN (baseline) | 83.66% | 4-conv blocks + GAP |
-| 2 | CNN w/o BatchNorm | — | 待运行 |
-| 3 | CNN w/o Dropout | — | 待运行 |
-| 4 | CNN w/o Data Augmentation | — | 待运行 |
+| 实验分组 | 变体 | 最佳验证准确率 | 最终验证准确率 | 说明 |
+|---------|------|:------------:|:------------:|------|
+| **BatchNorm** | With BatchNorm | **89.88%** | 89.62% | 标准 CNN + BN |
+|  | Without BatchNorm | **10.00%** | 10.00% | 无 BN → 无法学习 |
+| **Dropout** | Dropout = 0.0 | **90.62%** | 90.62% | 无 Dropout |
+|  | Dropout = 0.3 | **89.58%** | 89.58% | 默认 Dropout 率 |
+|  | Dropout = 0.5 | **88.08%** | 87.94% | 高 Dropout → 欠拟合 |
+| **Optimizer** | SGD | **89.58%** | 89.58% | SGD + Momentum |
+|  | Adam | **89.52%** | 89.26% | Adam (lr=0.001) |
+| **Scheduler** | CosineAnnealing | **89.80%** | 89.80% | 余弦退火 |
+|  | ReduceLROnPlateau | **86.76%** | 86.40% | 基于 plateau 衰减 |
+|  | No Scheduler | **80.54%** | 79.90% | 固定学习率 |
+| **Data Augmentation** | Full Augmentation | **89.38%** | 89.32% | RandomCrop + HFlip + Normalize |
+|  | Normalize Only | **84.04%** | 84.04% | 仅归一化 |
+|  | No Augmentation | **79.38%** | 78.66% | 无数据增强 |
 
 ## 4. 超参数对比
 

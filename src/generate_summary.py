@@ -101,6 +101,94 @@ def copy_images(src_dir: str, dst_dir: str, label: str) -> List[str]:
     return copied
 
 
+# Ablation data loading
+def load_ablation_data() -> Dict[str, Dict[str, Any]]:
+    """读取消融实验数据，按分组返回 {group: {display_name, experiments: [...]}}。"""
+    src_dir = os.path.dirname(os.path.abspath(__file__))
+    project_dir = os.path.dirname(src_dir)
+    ablation_dir = os.path.join(project_dir, "results", "ablation")
+
+    # Display names & notes for each (group, experiment)
+    experiment_info: Dict[Tuple[str, str], Tuple[str, str]] = {
+        ("batchnorm", "with_bn"): ("With BatchNorm", "标准 CNN + BN"),
+        ("batchnorm", "no_bn"): ("Without BatchNorm", "无 BN → 无法学习"),
+        ("dropout", "dropout_0"): ("Dropout = 0.0", "无 Dropout"),
+        ("dropout", "dropout_0.3"): ("Dropout = 0.3", "默认 Dropout 率"),
+        ("dropout", "dropout_0.5"): ("Dropout = 0.5", "高 Dropout → 欠拟合"),
+        ("optimizer", "sgd"): ("SGD", "SGD + Momentum"),
+        ("optimizer", "adam"): ("Adam", "Adam (lr=0.001)"),
+        ("scheduler", "cosine"): ("CosineAnnealing", "余弦退火"),
+        ("scheduler", "plateau"): ("ReduceLROnPlateau", "基于 plateau 衰减"),
+        ("scheduler", "none"): ("No Scheduler", "固定学习率"),
+        ("data_aug", "full_aug"): ("Full Augmentation", "RandomCrop + HFlip + Normalize"),
+        ("data_aug", "normalize_only"): ("Normalize Only", "仅归一化"),
+        ("data_aug", "no_aug"): ("No Augmentation", "无数据增强"),
+    }
+
+    group_display_names = {
+        "batchnorm": "BatchNorm",
+        "dropout": "Dropout",
+        "optimizer": "Optimizer",
+        "scheduler": "Scheduler",
+        "data_aug": "Data Augmentation",
+    }
+
+    group_order = ["batchnorm", "dropout", "optimizer", "scheduler", "data_aug"]
+    experiment_order = {
+        "batchnorm": ["with_bn", "no_bn"],
+        "dropout": ["dropout_0", "dropout_0.3", "dropout_0.5"],
+        "optimizer": ["sgd", "adam"],
+        "scheduler": ["cosine", "plateau", "none"],
+        "data_aug": ["full_aug", "normalize_only", "no_aug"],
+    }
+
+    groups: Dict[str, Dict[str, Any]] = {}
+    ab_path = Path(ablation_dir)
+    if not ab_path.exists():
+        return groups
+
+    for group in group_order:
+        group_path = ab_path / group
+        if not group_path.exists():
+            continue
+        experiments: List[Dict[str, Any]] = []
+        for exp in experiment_order.get(group, []):
+            exp_path = group_path / exp / "cnn"
+            history_path = exp_path / "history.json"
+            config_path = exp_path / "config.json"
+            if not history_path.exists() or not config_path.exists():
+                continue
+
+            with open(history_path, encoding="utf-8") as f:
+                history = json.load(f)
+            with open(config_path, encoding="utf-8") as f:
+                config = json.load(f)
+
+            val_acc = history.get("val_acc", [])
+            best_val_acc = max(val_acc) if val_acc else 0.0
+            final_val_acc = val_acc[-1] if val_acc else 0.0
+
+            disp_name, note = experiment_info.get(
+                (group, exp),
+                (exp, config.get("description", "")),
+            )
+
+            experiments.append({
+                "display_name": disp_name,
+                "best_val_acc": best_val_acc,
+                "final_val_acc": final_val_acc,
+                "note": note,
+            })
+
+        if experiments:
+            groups[group] = {
+                "display_name": group_display_names.get(group, group),
+                "experiments": experiments,
+            }
+
+    return groups
+
+
 # Table generation
 def generate_markdown_table(results: Dict[str, Dict[str, Any]]) -> str:
     """生成 Markdown 格式的模型对比汇总表。"""
@@ -138,13 +226,17 @@ def generate_markdown_table(results: Dict[str, Dict[str, Any]]) -> str:
         lines.append(f"| {name.upper()} | " + " | ".join(vals) + " |")
 
     lines.append("\n## 3. 消融实验\n")
-    lines.append("> **注意**: 消融实验尚未运行（需要 WSL GPU 环境），以下为占位说明。\n")
-    lines.append("| 实验编号 | 变体 | 测试准确率 | 说明 |")
-    lines.append("|---------|------|-----------|------|")
-    lines.append("| 1 | CNN (baseline) | 83.66% | 4-conv blocks + GAP |")
-    lines.append("| 2 | CNN w/o BatchNorm | — | 待运行 |")
-    lines.append("| 3 | CNN w/o Dropout | — | 待运行 |")
-    lines.append("| 4 | CNN w/o Data Augmentation | — | 待运行 |")
+    lines.append("| 实验分组 | 变体 | 最佳验证准确率 | 最终验证准确率 | 说明 |")
+    lines.append("|---------|------|:------------:|:------------:|------|")
+
+    ablation_data = load_ablation_data()
+    for group_name, group_info in ablation_data.items():
+        experiments = group_info["experiments"]
+        for i, exp in enumerate(experiments):
+            group_label = f"**{group_info['display_name']}**" if i == 0 else ""
+            best_str = f"**{exp['best_val_acc']:.2f}%**"
+            final_str = f"{exp['final_val_acc']:.2f}%"
+            lines.append(f"| {group_label} | {exp['display_name']} | {best_str} | {final_str} | {exp['note']} |")
 
     lines.append("\n## 4. 超参数对比\n")
     lines.append("> **注意**: 超参数搜索实验尚未运行（需要 WSL GPU 环境），以下为占位说明。\n")
