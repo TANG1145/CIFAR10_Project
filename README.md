@@ -46,22 +46,22 @@ CIFAR10_Project/
 
 ## 模型与结果
 
-| 模型 | 参数 | 测试准确率 | 训练配置 |
-|------|------|-----------|---------|
-| MLP | ~3.8M | 60.51% | Adam, lr=0.001, 200ep |
-| CNN (Improved) | ~4.69M | 91.11% | SGD, lr=0.1, 200ep |
-| ResNet-18（基线） | ~11M | 95.05% | SGD+Cosine, 200ep |
-| ResNet-18（增强） | ~11M | **95.16%** | SGD+Cosine+Label Smoothing+Warmup, 100ep |
+| 模型              | 参数   | 测试准确率 | 训练配置                                 |
+| ----------------- | ------ | ---------- | ---------------------------------------- |
+| MLP               | ~3.8M  | 60.51%     | Adam, lr=0.001, 200ep                    |
+| CNN (Improved)    | ~4.69M | 91.11%     | SGD, lr=0.1, 200ep                       |
+| ResNet-18（基线） | ~11M   | 95.05%     | SGD+Cosine, 200ep                        |
+| ResNet-18（增强） | ~11M   | **95.16%** | SGD+Cosine+Label Smoothing+Warmup, 100ep |
 
 ### 消融实验（50 轮，CNN）
 
-| 实验组 | 最佳配置 | 准确率 | 对比基线 |
-|--------|---------|--------|---------|
-| BatchNorm | with_bn | 89.88% | +79.88% |
-| Scheduler | cosine | 89.80% | +9.26% |
-| Data Aug | full_aug | 89.58% | +7.46% |
-| Dropout | 0.3 | 90.62% | +2.54% |
-| Optimizer | adam | 89.58% | +0.06% |
+| 实验组    | 最佳配置 | 准确率 | 对比基线 |
+| --------- | -------- | ------ | -------- |
+| BatchNorm | with_bn  | 89.88% | +79.88%  |
+| Scheduler | cosine   | 89.80% | +9.26%   |
+| Data Aug  | full_aug | 89.58% | +7.46%   |
+| Dropout   | 0.3      | 90.62% | +2.54%   |
+| Optimizer | adam     | 89.58% | +0.06%   |
 
 ## 环境配置
 
@@ -127,22 +127,22 @@ python evaluate.py --model cnn --checkpoint ../checkpoints/cnn/best_model.pth --
 
 ## 参数说明
 
-| 参数 | 说明 | 可选值 | 默认值 |
-|------|------|------|--------|
-| `--model` | 模型类型 | `mlp` / `cnn` / `resnet18` | `cnn` |
-| `--cnn_variant` | CNN 变体 | `standard` / `improved` | `improved` |
-| `--epochs` | 训练轮数 | — | `200` |
-| `--batch_size` | 批次大小 | — | `128` |
-| `--lr` | 学习率 | — | `0.1` |
-| `--weight_decay` | 权重衰减 | — | `5e-4` |
-| `--optimizer` | 优化器 | `adam` / `sgd` | `sgd` |
-| `--scheduler` | 学习率调度器 | `cosine` / `plateau` / `none` | `none` |
-| `--label_smoothing` | 标签平滑系数 | 0.0~1.0 | `0.0` |
-| `--warmup_epochs` | Warmup 轮数 | — | `0` |
-| `--dropout` | Dropout 比率 | 0.0~0.5 | `0.3` |
-| `--use_bn` | 使用 BatchNorm | — | `True` |
-| `--device` | 设备 | `cpu` / `cuda` | `cuda` |
-| `--seed` | 随机种子 | — | `42` |
+| 参数                | 说明           | 可选值                        | 默认值     |
+| ------------------- | -------------- | ----------------------------- | ---------- |
+| `--model`           | 模型类型       | `mlp` / `cnn` / `resnet18`    | `cnn`      |
+| `--cnn_variant`     | CNN 变体       | `standard` / `improved`       | `improved` |
+| `--epochs`          | 训练轮数       | —                             | `200`      |
+| `--batch_size`      | 批次大小       | —                             | `128`      |
+| `--lr`              | 学习率         | —                             | `0.1`      |
+| `--weight_decay`    | 权重衰减       | —                             | `5e-4`     |
+| `--optimizer`       | 优化器         | `adam` / `sgd`                | `sgd`      |
+| `--scheduler`       | 学习率调度器   | `cosine` / `plateau` / `none` | `none`     |
+| `--label_smoothing` | 标签平滑系数   | 0.0~1.0                       | `0.0`      |
+| `--warmup_epochs`   | Warmup 轮数    | —                             | `0`        |
+| `--dropout`         | Dropout 比率   | 0.0~0.5                       | `0.3`      |
+| `--use_bn`          | 使用 BatchNorm | —                             | `True`     |
+| `--device`          | 设备           | `cpu` / `cuda`                | `cuda`     |
+| `--seed`            | 随机种子       | —                             | `42`       |
 
 ## 报告
 
@@ -151,8 +151,6 @@ LaTeX 报告位于 `reports/report_overleaf_images.tex`，共 25 页，包含：
 - 5 个章节：引言、数据探索、模型架构、实验结果、结论
 - 28 张可视化图表
 - 5 篇参考文献
-
-使用 VS Code + LaTeX Workshop 扩展编译（保存即自动编译）。
 
 ## 测试
 
