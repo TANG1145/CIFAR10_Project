@@ -1,3 +1,4 @@
+
 \documentclass[12pt,a4paper]{article}
 
 % ==================== 基础包 ====================
@@ -80,7 +81,7 @@
 
 % ==================== 摘要 ====================
 \begin{abstract}
-本报告系统研究了CIFAR-10数据集上的图像分类问题，分别实现了多层感知机(MLP)、卷积神经网络(CNN)和ResNet-18三种模型架构。通过大量消融实验，深入分析了Batch Normalization、Dropout、优化器选择、学习率调度和数据增强等关键技术对模型性能的影响。实验结果表明，ResNet-18在测试集上达到了95.05\%的准确率（基线模型，200轮），显著优于CNN(91.11\%)和MLP(60.51\%)。本报告详细记录了实验设计、结果分析和结论，为深度学习图像分类任务提供了有价值的参考。
+本报告系统研究了CIFAR-10数据集上的图像分类问题，分别实现了多层感知机(MLP)、卷积神经网络(CNN)和ResNet-18三种模型架构。通过大量消融实验，深入分析了Batch Normalization、Dropout、优化器选择、学习率调度和数据增强等关键技术对模型性能的影响。实验结果表明，ResNet-18在测试集上达到了95.05\%的准确率（基线模型，200轮），显著优于CNN(91.11\%)和MLP(60.51\%)。本报告详细记录了实验设计、结果分析和结论。
 \end{abstract}
 
 \tableofcontents
@@ -110,7 +111,7 @@ CIFAR-10数据集的具体规模如下：
     \text{Accuracy} = \frac{\text{正确分类的样本数}}{\text{总样本数}} \times 100\%
 \end{equation}
 
-此外，我们还记录了每个类别的准确率、混淆矩阵以及训练过程中的损失曲线，以全面评估模型性能。
+此外，我还记录了每个类别的准确率、混淆矩阵以及训练过程中的损失曲线，以全面评估模型性能。
 
 \subsection{任务难点分析}
 
@@ -127,7 +128,7 @@ CIFAR-10图像分类任务面临以下挑战：
 
 \subsection{数据探索}
 
-在构建模型之前，我们首先对CIFAR-10数据集进行了详细的数据探索分析。
+在构建模型之前，我首先对CIFAR-10数据集进行了详细的数据探索分析。
 
 \subsubsection{类别分布}
 
@@ -153,7 +154,7 @@ CIFAR-10数据集的类别分布是完全均衡的，如图~\ref{fig:class_distr
 
 \subsubsection{像素统计}
 
-我们对训练集的像素值进行了统计分析，计算了每个通道的均值和标准差：
+我对训练集的像素值进行了统计分析，计算了每个通道的均值和标准差：
 \begin{itemize}[leftmargin=2em]
     \item \textbf{均值:} $[0.4914, 0.4822, 0.4465]$
     \item \textbf{标准差:} $[0.2023, 0.1994, 0.2010]$
@@ -163,7 +164,7 @@ CIFAR-10数据集的类别分布是完全均衡的，如图~\ref{fig:class_distr
 
 \subsection{数据划分}
 
-我们将原始的50,000张训练图像进一步划分为训练集和验证集：
+我将原始的50,000张训练图像进一步划分为训练集和验证集：
 \begin{itemize}[leftmargin=2em]
     \item \textbf{训练集:} 45,000张图像 (90\%)
     \item \textbf{验证集:} 5,000张图像 (10\%)
@@ -187,7 +188,7 @@ CIFAR-10数据集的类别分布是完全均衡的，如图~\ref{fig:class_distr
 
 \subsubsection{数据增强}
 
-为了提高模型的泛化能力，我们在训练阶段应用了以下数据增强技术：
+为了提高模型的泛化能力，我在训练阶段应用了以下数据增强技术：
 
 \begin{lstlisting}[caption={数据增强配置},label={lst:augmentation}]
 transform_train = transforms.Compose([
@@ -218,7 +219,7 @@ transform_train = transforms.Compose([
 
 \subsubsection{模型架构}
 
-MLP是最基础的神经网络结构，我们将$32 \times 32 \times 3 = 3072$维的图像向量展平后输入全连接网络。
+MLP是最基础的神经网络结构，我将$32 \times 32 \times 3 = 3072$维的图像向量展平后输入全连接网络。
 
 \begin{lstlisting}[caption={MLP模型定义},label={lst:mlp}]
 class MLP(nn.Module):
@@ -427,7 +428,7 @@ class BasicBlock(nn.Module):
 
 \subsection{模型对比实验}
 
-我们首先对比了三种模型在CIFAR-10测试集上的性能。
+我首先对比了三种模型在CIFAR-10测试集上的性能。
 
 \subsubsection{准确率对比}
 
@@ -515,7 +516,7 @@ CNN & 91.11\% & $\sim$4.69M \\
 
 \subsection{消融实验}
 
-为了深入理解各技术组件的作用，我们在CNN模型(训练50轮)上进行了系统的消融实验。
+为了深入理解各技术组件的作用，我在CNN模型(训练50轮)上进行了系统的消融实验。
 
 \subsubsection{Batch Normalization的影响}
 
@@ -638,7 +639,7 @@ CNN & 91.11\% & $\sim$4.69M \\
     \item \textbf{无调度:} 固定学习率导致后期无法精细调整，性能最差
 \end{itemize}
 
-\textbf{结论:} CosineAnnealing调度策略表现最佳，建议作为默认选择。
+\textbf{结论:} CosineAnnealing调度策略表现最佳，可以作为默认选择。
 
 \begin{figure}[H]
     \centering
@@ -671,7 +672,7 @@ CNN & 91.11\% & $\sim$4.69M \\
     \item 即使仅使用Normalize也能获得一定提升，因为标准化使优化 landscape 更平滑
 \end{itemize}
 
-\textbf{结论:} 数据增强是提升模型泛化能力的有效手段，建议始终使用。
+\textbf{结论:} 数据增强是提升模型泛化能力的有效手段，可以始终使用。
 
 \begin{figure}[H]
     \centering
@@ -696,7 +697,7 @@ CNN & 91.11\% & $\sim$4.69M \\
 
 \subsection{ResNet-18增强训练}
 
-为了进一步提升ResNet-18的性能，我们尝试了Label Smoothing和Warmup技术。本节作为消融实验，将增强训练结果与基线模型进行对比。
+为了进一步提升ResNet-18的性能，我尝试了Label Smoothing和Warmup技术。本节作为消融实验，将增强训练结果与基线模型进行对比。
 
 \subsubsection{基线配置}
 
@@ -775,7 +776,7 @@ CNN & 91.11\% & $\sim$4.69M \\
 
 \subsection{主要发现}
 
-通过本次大作业的系统性实验，我们得出以下关键结论：
+通过本次大作业的系统性实验，我得出以下关键结论：
 
 \begin{enumerate}[leftmargin=2em]
     \item \textbf{网络架构至关重要:} ResNet-18(95.05\%)显著优于CNN(91.11\%)和MLP(60.51\%)。残差连接使深层网络训练成为可能，能够学习更复杂的特征表示。
@@ -792,8 +793,6 @@ CNN & 91.11\% & $\sim$4.69M \\
 \end{enumerate}
 
 \subsection{可能的改进方向}
-
-基于本次实验的经验，我们提出以下可能的改进方向：
 
 \subsubsection{1. 更强的数据增强}
 
@@ -840,7 +839,7 @@ CNN & 91.11\% & $\sim$4.69M \\
 
 \subsection{总结}
 
-本报告通过系统的实验设计和详细的消融分析，深入探讨了深度学习图像分类中的关键技术。从简单的MLP到先进的ResNet-18，我们见证了网络架构演进带来的巨大性能提升。消融实验揭示了Batch Normalization、学习率调度和数据增强等技术的实际价值，为今后的深度学习实践提供了宝贵的经验。
+本报告通过系统的实验设计和详细的消融分析，深入探讨了深度学习图像分类中的关键技术。从简单的MLP到先进的ResNet-18，我见证了网络架构演进带来的巨大性能提升。消融实验揭示了Batch Normalization、学习率调度和数据增强等技术的实际价值，为今后的深度学习实践提供了宝贵的经验。
 
 CIFAR-10作为一个经典的基准数据集，虽然图像分辨率较低，但涵盖了丰富的视觉概念和类间挑战。在这个数据集上获得的洞察，可以迁移到更复杂、更实用的计算机视觉任务中。
 

@@ -2,10 +2,16 @@
   "active_plan": "/Users/tan/Projects/CIFAR10_Project/.sisyphus/plans/high-score-boost.md",
   "started_at": "2026-05-13T11:19:48.382Z",
   "session_ids": [
-    "ses_1df19d8c9ffeCMM9rAL3u38quo"
+    "ses_1df19d8c9ffeCMM9rAL3u38quo",
+    "ses_1d5baaf14ffejmx6PQ0jvieTPJ",
+    "ses_1d5baa855ffeU3cLh3pnlhOsqC",
+    "ses_1d564f5f3ffeiaEU1dedfuOEfp"
   ],
   "session_origins": {
-    "ses_1df19d8c9ffeCMM9rAL3u38quo": "direct"
+    "ses_1df19d8c9ffeCMM9rAL3u38quo": "direct",
+    "ses_1d5baaf14ffejmx6PQ0jvieTPJ": "appended",
+    "ses_1d5baa855ffeU3cLh3pnlhOsqC": "appended",
+    "ses_1d564f5f3ffeiaEU1dedfuOEfp": "appended"
   },
   "plan_name": "high-score-boost",
   "agent": "atlas",

@@ -33,7 +33,7 @@ from generate_plots import generate_synthetic_history
 REAL_HISTORY_PATHS: Dict[str, str] = {
     "cnn": "results/cnn_retrain/history.json",
     "mlp": "results/mlp_retrain/history.json",
-    "resnet18": "results/resnet18_baseline/history.json",
+    "resnet18": "results/resnet18_enhanced/history.json",
 }
 
 # Model metadata
