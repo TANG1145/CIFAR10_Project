@@ -1,20 +1,20 @@
 [
   {
-    "ablation": "scheduler",
-    "experiment": "cosine",
-    "best_val_acc": 89.8,
-    "save_dir": "results/ablation/scheduler/cosine/cnn"
+    "ablation": "data_aug",
+    "experiment": "no_aug",
+    "best_val_acc": 82.12,
+    "save_dir": "results/ablation/data_aug/no_aug/cnn"
   },
   {
-    "ablation": "scheduler",
-    "experiment": "plateau",
-    "best_val_acc": 86.76,
-    "save_dir": "results/ablation/scheduler/plateau/cnn"
+    "ablation": "data_aug",
+    "experiment": "normalize_only",
+    "best_val_acc": 82.56,
+    "save_dir": "results/ablation/data_aug/normalize_only/cnn"
   },
   {
-    "ablation": "scheduler",
-    "experiment": "none",
-    "best_val_acc": 80.54,
-    "save_dir": "results/ablation/scheduler/none/cnn"
+    "ablation": "data_aug",
+    "experiment": "full_aug",
+    "best_val_acc": 89.58,
+    "save_dir": "results/ablation/data_aug/full_aug/cnn"
   }
 ]

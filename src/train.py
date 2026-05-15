@@ -142,7 +142,7 @@ def run_training(
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"Total parameters: {total_params:,}, Trainable: {trainable_params:,}")
 
-    criterion = nn.CrossEntropyLoss(label_smoothing=args.label_smoothing)
+    criterion = nn.CrossEntropyLoss(label_smoothing=getattr(args, "label_smoothing", 0.0))
 
     if args.optimizer == 'adam':
         optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
@@ -184,8 +184,8 @@ def run_training(
     for epoch in range(start_epoch, args.epochs + 1):
         print(f"\nEpoch [{epoch}/{args.epochs}]")
 
-        if args.warmup_epochs > 0 and epoch <= args.warmup_epochs:
-            warmup_lr = args.lr * (epoch / args.warmup_epochs)
+        if getattr(args, "warmup_epochs", 0) > 0 and epoch <= getattr(args, "warmup_epochs", 0):
+            warmup_lr = args.lr * (epoch / getattr(args, "warmup_epochs", 0))
             for param_group in optimizer.param_groups:
                 param_group['lr'] = warmup_lr
 
