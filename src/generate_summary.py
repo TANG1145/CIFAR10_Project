@@ -571,7 +571,8 @@ def main() -> None:
     print(f"  Generated {len(generated_cmp)} comparison images\n")
 
     print("[5/6] Generating ablation & hyperparameter placeholders...")
-    generate_ablation_placeholder(output_dir)
+    # Real ablation_comparison.png comes from plot_ablation.py
+    # generate_ablation_placeholder(output_dir)
     generate_hyperparams_placeholder(output_dir)
     print()
 

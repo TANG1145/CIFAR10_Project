@@ -400,24 +400,24 @@ class BasicBlock(nn.Module):
 
 \subsection{训练配置}
 
-三种模型采用统一的训练配置，以确保实验结果的可比性：
+各模型采用独立的训练配置，主要区别在于优化器和学习率：
 
 \begin{table}[H]
     \centering
-    \caption{统一训练配置}
+    \caption{各模型训练配置}
     \label{tab:training_config}
-    \begin{tabular}{ll}
+    \begin{tabular}{lccc}
         \toprule
-        \textbf{配置项} & \textbf{设置值} \\
+        \textbf{配置项} & \textbf{MLP} & \textbf{CNN} & \textbf{ResNet-18} \\
         \midrule
-        优化器 & SGD \\
-        学习率 & 0.1 \\
-        动量 & 0.9 \\
-        权重衰减 & $5 \times 10^{-4}$ \\
-        学习率调度 & CosineAnnealingLR \\
-        Batch Size & 128 \\
-        训练轮数 & 200 (MLP, CNN, ResNet-18) \\
-        损失函数 & CrossEntropyLoss \\
+        优化器 & Adam & SGD & SGD \\
+        学习率 & 0.001 & 0.1 & 0.1 \\
+        动量 & --- & --- & 0.9 \\
+        权重衰减 & \multicolumn{3}{c}{$5 \times 10^{-4}$} \\
+        学习率调度 & CosineAnnealingLR & CosineAnnealingLR & CosineAnnealingLR \\
+        Batch Size & \multicolumn{3}{c}{128} \\
+        训练轮数 & \multicolumn{3}{c}{200} \\
+        损失函数 & \multicolumn{3}{c}{CrossEntropyLoss} \\
         \bottomrule
     \end{tabular}
 \end{table}
