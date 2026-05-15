@@ -33,7 +33,7 @@ from generate_plots import generate_synthetic_history
 REAL_HISTORY_PATHS: Dict[str, str] = {
     "cnn": "results/cnn_retrain/history.json",
     "mlp": "results/mlp_retrain/history.json",
-    "resnet18": "results/resnet18_enhanced/history.json",
+    "resnet18": "results/resnet18_baseline/history.json",
 }
 
 # Model metadata
@@ -63,7 +63,7 @@ MODEL_META: Dict[str, Dict[str, Any]] = {
         "training_time": "~15 min (GPU)",
         "optimizer": "SGD (lr=0.1, momentum=0.9)",
         "scheduler": "CosineAnnealingLR",
-        "epochs": 100,
+        "epochs": 200,
     },
 }
 

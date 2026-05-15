@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.5.14)  15 MAY 2026 01:26
+This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.5.14)  15 MAY 2026 09:18
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1361,9 +1361,10 @@ File: images/ablation_comparison.png Graphic file (type bmp)
  [18]
 File: images/resnet18_smooth.png Graphic file (type bmp)
 <images/resnet18_smooth.png>
+ [19]
 File: images/per_class_comparison.png Graphic file (type bmp)
 <images/per_class_comparison.png>
- [19] [20] [21] [22] [23] [24]
+ [20] [21] [22] [23] [24]
 (./report_overleaf_images.aux)
  ***********
 LaTeX2e <2025-11-01>
@@ -1371,16 +1372,16 @@ L3 programming layer <2022/08/05>
  ***********
 Package rerunfilecheck Info: File `report_overleaf_images.out' has not changed.
 
-(rerunfilecheck)             Checksum: 221F5563B90FE0B9F028994E92B8C6D6;5964.
+(rerunfilecheck)             Checksum: BD3DA1AC959361C7B194AD7C7B5B983A;5920.
 Package logreq Info: Writing requests to 'report_overleaf_images.run.xml'.
 \openout1 = `report_overleaf_images.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 26968 strings out of 468168
- 549858 string characters out of 5432815
- 1520065 words of memory out of 5000000
- 55333 multiletter control sequences out of 15000+600000
+ 27043 strings out of 468168
+ 554546 string characters out of 5432815
+ 1520026 words of memory out of 5000000
+ 55408 multiletter control sequences out of 15000+600000
  637287 words of font info for 112 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  93i,10n,114p,711b,4835s stack positions out of 10000i,1000n,20000p,200000b,200000s

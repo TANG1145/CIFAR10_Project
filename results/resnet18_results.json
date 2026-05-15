@@ -1,19 +1,19 @@
 {
   "model": "resnet18",
-  "test_accuracy": 95.16,
-  "test_precision_macro": 0.9516,
-  "test_recall_macro": 0.9516,
-  "test_f1_macro": 0.9516,
+  "test_accuracy": 95.05,
+  "test_precision_macro": 0.9504,
+  "test_recall_macro": 0.9505,
+  "test_f1_macro": 0.9504,
   "per_class_accuracy": {
-    "airplane": 0.962,
-    "automobile": 0.981,
-    "bird": 0.923,
-    "cat": 0.9,
-    "deer": 0.97,
-    "dog": 0.919,
-    "frog": 0.964,
-    "horse": 0.968,
-    "ship": 0.964,
-    "truck": 0.965
+    "airplane": 0.959,
+    "automobile": 0.98,
+    "bird": 0.93,
+    "cat": 0.886,
+    "deer": 0.964,
+    "dog": 0.915,
+    "frog": 0.977,
+    "horse": 0.965,
+    "ship": 0.967,
+    "truck": 0.962
   }
 }
