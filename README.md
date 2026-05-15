@@ -36,7 +36,8 @@ CIFAR10_Project/
 │   └── utils.py               # 工具函数
 ├── tests/                     # 单元测试
 ├── reports/
-│   ├── report_overleaf_images.tex  # LaTeX 报告源文件（25 页）
+│   ├── report.tex  # LaTeX 报告源文件（25 页）
+│   ├── report.pdf  # 报告 pdf
 │   ├── references.bib         # 参考文献
 │   └── images/                # 报告用图
 ├── .vscode/settings.json      # VS Code 工作区配置
