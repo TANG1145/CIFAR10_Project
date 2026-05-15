@@ -29,6 +29,13 @@ from visualization import (
 from generate_plots import generate_synthetic_history
 
 
+# Real history file paths (relative to project root)
+REAL_HISTORY_PATHS: Dict[str, str] = {
+    "cnn": "results/cnn_retrain/history.json",
+    "mlp": "results/mlp_retrain/history.json",
+    "resnet18": "results/resnet18_enhanced/history.json",
+}
+
 # Model metadata
 MODEL_META: Dict[str, Dict[str, Any]] = {
     "mlp": {
@@ -38,7 +45,7 @@ MODEL_META: Dict[str, Dict[str, Any]] = {
         "training_time": "~2 min (CPU)",
         "optimizer": "Adam (lr=0.001)",
         "scheduler": "None",
-        "epochs": 50,
+        "epochs": 200,
     },
     "cnn": {
         "full_name": "CNN (4-conv blocks + GAP)",
@@ -47,7 +54,7 @@ MODEL_META: Dict[str, Dict[str, Any]] = {
         "training_time": "~5 min (GPU)",
         "optimizer": "Adam (lr=0.001)",
         "scheduler": "None",
-        "epochs": 50,
+        "epochs": 200,
     },
     "resnet18": {
         "full_name": "ResNet-18",
@@ -59,6 +66,25 @@ MODEL_META: Dict[str, Dict[str, Any]] = {
         "epochs": 100,
     },
 }
+
+def load_real_history(model_name: str, results_dir: str, epochs: int) -> Optional[Dict[str, List[float]]]:
+    """加载真实的训练历史数据。如果文件不存在则返回 None。"""
+    project_dir = os.path.dirname(results_dir) if os.path.basename(results_dir) == "results" else os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    if model_name in REAL_HISTORY_PATHS:
+        rel_path = REAL_HISTORY_PATHS[model_name]
+        history_path = os.path.join(project_dir, rel_path)
+        if os.path.exists(history_path):
+            with open(history_path, encoding="utf-8") as f:
+                history = json.load(f)
+            required_keys = ["train_loss", "val_loss", "train_acc", "val_acc"]
+            if all(k in history for k in required_keys):
+                print(f"  [{model_name}] Loaded real history from {rel_path} ({len(history['val_acc'])} epochs)")
+                return history
+            print(f"  [{model_name}] Warning: history file missing keys, falling back to synthetic")
+        else:
+            print(f"  [{model_name}] No real history at {rel_path}, falling back to synthetic ({epochs} epochs)")
+    return None
+
 
 CIFAR10_CLASSES = [
     "airplane", "automobile", "bird", "cat", "deer",
@@ -413,9 +439,10 @@ def generate_model_comparison_from_results(
     results: Dict[str, Dict[str, Any]],
     output_dir: str,
 ) -> List[str]:
-    """从结果 JSON 生成模型对比图（使用合成历史数据）。"""
+    """从结果 JSON 生成模型对比图（使用真实历史数据）。"""
     generated: List[str] = []
     np.random.seed(42)
+    results_dir = os.path.dirname(output_dir) if output_dir.endswith("final") else output_dir
 
     history_data: Dict[str, Dict[str, List[float]]] = {}
     for name in ["mlp", "cnn", "resnet18"]:
@@ -424,7 +451,11 @@ def generate_model_comparison_from_results(
         meta = MODEL_META.get(name, {})
         epochs = meta.get("epochs", 50)
         final_acc = results[name].get("test_accuracy", 50.0)
-        history_data[name] = generate_synthetic_history(name, final_acc, epochs)
+        real_history = load_real_history(name, results_dir, epochs)
+        if real_history is not None:
+            history_data[name] = real_history
+        else:
+            history_data[name] = generate_synthetic_history(name, final_acc, epochs)
 
     if len(history_data) >= 2:
         path = os.path.join(output_dir, "model_comparison_curves.png")
@@ -448,9 +479,10 @@ def generate_improved_curves(
     results: Dict[str, Dict[str, Any]],
     output_dir: str,
 ) -> List[str]:
-    """为每个模型生成改进版训练曲线（平滑 + best epoch 标记）。"""
+    """为每个模型生成改进版训练曲线（平滑 + best epoch 标记，使用真实历史数据）。"""
     generated: List[str] = []
     np.random.seed(42)
+    results_dir = os.path.dirname(output_dir) if output_dir.endswith("final") else output_dir
 
     for name in ["mlp", "cnn", "resnet18"]:
         if name not in results:
@@ -458,7 +490,11 @@ def generate_improved_curves(
         meta = MODEL_META.get(name, {})
         epochs = meta.get("epochs", 50)
         final_acc = results[name].get("test_accuracy", 50.0)
-        history = generate_synthetic_history(name, final_acc, epochs)
+        real_history = load_real_history(name, results_dir, epochs)
+        if real_history is not None:
+            history = real_history
+        else:
+            history = generate_synthetic_history(name, final_acc, epochs)
 
         path_smooth = os.path.join(output_dir, f"{name}_smooth.png")
         plot_training_curves_improved(history, path_smooth, smooth=True, mark_best=False)
